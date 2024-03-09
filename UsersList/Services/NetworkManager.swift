@@ -7,17 +7,6 @@
 
 import Foundation
 
-//enum Link {
-//    case usersURL
-//    
-//    var url: URL {
-//        switch self {
-//        case .usersURL:
-//            return URL(string: "https://stoplight.io/mocks/kode-education/trainee-test/25143926/users")!
-//        }
-//    }
-//}
-
 enum NetworkError: Error {
     case invalidURL
     case noData
@@ -42,31 +31,7 @@ final class NetworkManager {
             }
         }
     }
-    
-//    func fetch<T: Decodable>(_ type: T.Type, from url: URL, completion: @escaping(Result<T, NetworkError>) -> Void) {
-//        
-//        URLSession.shared.dataTask(with: url) { data, _, error in
-//            guard let data else {
-//                completion(.failure(.noData))
-//                print(error?.localizedDescription ?? "No error description")
-//                return
-//            }
-//            
-//            do {
-//                let decoder = JSONDecoder()
-////                decoder.keyDecodingStrategy = .convertFromSnakeCase
-//                let dataModel = try decoder.decode(T.self, from: data)
-//                DispatchQueue.main.async {
-//                    completion(.success(dataModel))
-//                }
-//            } catch {
-//                completion(.failure(.decodingError))
-//                print(error.localizedDescription)
-//            }
-//            
-//        }.resume()
-//    }
-    
+        
     func fetchUser(completion: @escaping(Result<[User], NetworkError>) -> Void) {
         print("try to fetch user data")
         let urlString = "https://stoplight.io/mocks/kode-education/trainee-test/25143926/users"
@@ -98,7 +63,7 @@ final class NetworkManager {
             
             do {
                 let decoder = JSONDecoder()
-                //                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                // decoder.keyDecodingStrategy = .convertFromSnakeCase
                 let dataModel = try decoder.decode(Query.self, from: data)
                 DispatchQueue.main.async {
                     completion(.success(dataModel.items))
@@ -110,6 +75,5 @@ final class NetworkManager {
             
         }.resume()
     }
-    
     
 }

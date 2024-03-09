@@ -69,8 +69,9 @@ extension UsersListViewController: UITableViewDelegate, UITableViewDataSource {
             let user = users[indexPath.row]
     
             var content = cell.defaultContentConfiguration()
-            content.text = user.firstName
-            content.secondaryText = user.position
+//            content.text = user.firstName
+            content.text = user.fullName
+            content.secondaryText = user.department.title + " " + user.position
 //            content.text = "dsfdfsdfsdf"
 //            print(user.avatarUrl)
             cell.contentConfiguration = content
