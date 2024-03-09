@@ -5,7 +5,6 @@
 //  Created by Gordey Guselnikov on 3/9/24.
 //
 
-
 // MARK: - Query
 struct Query: Decodable {
     let items: [User]
