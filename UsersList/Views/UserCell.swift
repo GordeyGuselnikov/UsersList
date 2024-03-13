@@ -8,16 +8,19 @@
 import UIKit
 
 class UserCell: UITableViewCell {
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
+    var fullName: String!
+    
+    override func updateConfiguration(using state: UICellConfigurationState) {
+//        var content = self.defaultContentConfiguration().updated(for: state)
+        var content = self.defaultContentConfiguration()
+        content.text = self.fullName
+        
+//        if state.isSelected {
+//            content.text = "Selected"
+//            content.image = UIImage(systemName: "checkmark")
+//        }
+        
+        self.contentConfiguration = content
     }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-
+    
 }

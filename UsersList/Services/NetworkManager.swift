@@ -19,7 +19,10 @@ final class NetworkManager {
     
     private init () {}
     
-    func fetchImageData(from url: URL, completion: @escaping(Result<Data, NetworkError>) -> Void) {
+    func fetchImageData(from urlString: String, completion: @escaping(Result<Data, NetworkError>) -> Void) {
+        guard let url = URL(string: urlString) else {
+            fatalError("error")
+        }
         
         DispatchQueue.global().async {
             guard let imageData = try? Data(contentsOf: url) else {
@@ -46,6 +49,13 @@ final class NetworkManager {
         request.setValue("code=200, dynamic=true", forHTTPHeaderField: "Prefer")
         
         URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data, let response else {
+                completion(.failure(.noData))
+                print(error?.localizedDescription ?? "No error description")
+                return
+            }
+            
+            print(response)
             
             let httpResponse = response as? HTTPURLResponse
             print("status code: \(httpResponse?.statusCode ?? 0)")
@@ -55,15 +65,8 @@ final class NetworkManager {
                 return
             }
             
-            guard let data else {
-                completion(.failure(.noData))
-                print(error?.localizedDescription ?? "No error description")
-                return
-            }
-            
             do {
                 let decoder = JSONDecoder()
-                // decoder.keyDecodingStrategy = .convertFromSnakeCase
                 let dataModel = try decoder.decode(Query.self, from: data)
                 DispatchQueue.main.async {
                     completion(.success(dataModel.items))

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8F3B14FD2BA1908900119749 /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3B14FC2BA1908900119749 /* UserCell.swift */; };
 		D409734D2B96BFFD00EA7310 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D409734C2B96BFFD00EA7310 /* AppDelegate.swift */; };
 		D409734F2B96BFFD00EA7310 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D409734E2B96BFFD00EA7310 /* SceneDelegate.swift */; };
 		D40973512B96BFFD00EA7310 /* UsersListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40973502B96BFFD00EA7310 /* UsersListViewController.swift */; };
@@ -37,6 +38,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8F3B14FC2BA1908900119749 /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
 		D40973492B96BFFD00EA7310 /* UsersList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UsersList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D409734C2B96BFFD00EA7310 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D409734E2B96BFFD00EA7310 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -78,6 +80,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8F11C8902BA14E6200005010 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				8F3B14FC2BA1908900119749 /* UserCell.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		D40973402B96BFFD00EA7310 = {
 			isa = PBXGroup;
 			children = (
@@ -105,6 +115,7 @@
 				D40973832B9B942A00EA7310 /* Services */,
 				D40973802B9B90AC00EA7310 /* Models */,
 				D409737D2B9B902E00EA7310 /* ViewControllers */,
+				8F11C8902BA14E6200005010 /* Views */,
 				D409737F2B9B907B00EA7310 /* Resources */,
 				D409737E2B9B905A00EA7310 /* Storyboards */,
 			);
@@ -310,6 +321,7 @@
 			files = (
 				D40973822B9B918B00EA7310 /* User.swift in Sources */,
 				D40973512B96BFFD00EA7310 /* UsersListViewController.swift in Sources */,
+				8F3B14FD2BA1908900119749 /* UserCell.swift in Sources */,
 				D40973852B9B945500EA7310 /* NetworkManager.swift in Sources */,
 				D409734D2B96BFFD00EA7310 /* AppDelegate.swift in Sources */,
 				D409734F2B96BFFD00EA7310 /* SceneDelegate.swift in Sources */,

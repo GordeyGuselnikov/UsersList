@@ -23,8 +23,8 @@ struct User: Decodable {
     let phone: String
     
     var fullName: String {
-            "\(firstName) \(lastName)"
-        }
+        "\(firstName) \(lastName)"
+    }
 }
 
 // MARK: - Departments
@@ -74,4 +74,3 @@ enum Departments: String, CodingKey, Decodable, CaseIterable {
         }
     }
 }
-
