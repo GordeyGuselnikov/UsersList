@@ -94,8 +94,9 @@ extension UsersListViewController: UISearchResultsUpdating {
     private func setupSearchController() {
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Search"
-        searchController.searchBar.tintColor = .white
+        searchController.searchBar.placeholder = "Введи имя, тег, почту..."
+        searchController.searchBar.tintColor = .purple
+        searchController.searchBar.setValue("Отмена", forKey: "cancelButtonText")
 //        navigationItem.hidesSearchBarWhenScrolling = false
 //        navigationItem.searchController = searchController
         definesPresentationContext = true
@@ -104,7 +105,7 @@ extension UsersListViewController: UISearchResultsUpdating {
     
     
     func updateSearchResults(for searchController: UISearchController) {
-        filterContentForSearchText(searchController.searchBar.text!)
+        filterContentForSearchText(searchController.searchBar.text ?? "")
     }
     
     private func filterContentForSearchText(_ searchText: String) {
