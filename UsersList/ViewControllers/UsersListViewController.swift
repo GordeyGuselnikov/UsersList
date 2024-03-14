@@ -13,7 +13,6 @@ final class UsersListViewController: UIViewController {
     private let searchController = UISearchController(searchResultsController: nil)
 //    private let searchBar = UISearchBar()
     
-    
     private var users: [User] = []
     private var filteredUsers: [User] = []
     private var searchBarIsEmpty: Bool { // возвращает true если строка поиска пустая
@@ -39,10 +38,11 @@ final class UsersListViewController: UIViewController {
     
     func setupTableView() {
         view.addSubview(tableView)
+        tableView.rowHeight = 80
+        tableView.separatorStyle = .none
         tableView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-//            tableView.topAnchor.constraint(equalTo: view.),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
@@ -50,21 +50,6 @@ final class UsersListViewController: UIViewController {
 //        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         tableView.dataSource = self
         tableView.delegate = self
-    }
-    
-    private func fetchUsers() {
-        NetworkManager.shared.fetchUser { [weak self] result in
-            switch result {
-            case .success(let users):
-                print(users)
-                //self?.showAlert(withStatus: .success)
-                self?.users = users
-                self?.tableView.reloadData()
-            case .failure(let error):
-                print(error)
-                // self?.showAlert(withStatus: .failed)
-            }
-        }
     }
     
 }
@@ -82,7 +67,8 @@ extension UsersListViewController: UITableViewDelegate, UITableViewDataSource {
         let cell = UserCell()
     
         let user = users[indexPath.row]
-        cell.fullName = user.fullName
+//        cell.fullName = user.fullName
+        cell.user = user
         
         return cell
     }
@@ -98,7 +84,9 @@ extension UsersListViewController: UISearchResultsUpdating {
         searchController.searchBar.tintColor = .purple
         searchController.searchBar.setValue("Отмена", forKey: "cancelButtonText")
 //        navigationItem.hidesSearchBarWhenScrolling = false
+//        searchController.hidesNavigationBarDuringPresentation = false
 //        navigationItem.searchController = searchController
+//        searchController
         definesPresentationContext = true
         tableView.tableHeaderView = searchController.searchBar
     }
@@ -117,34 +105,22 @@ extension UsersListViewController: UISearchResultsUpdating {
     }
 }
 
-//    func configure(with user: User) -> UIListContentConfiguration {
-//
-//        var content = cell.defaultContentConfiguration()
-//
-//        content.text = user.fullName
-//        content.secondaryText = user.department.title + " " + user.position
-//        content.image = UIImage(systemName: "bicycle")
-//
-//        print(user.avatarUrl)
-//
-//        networkManager.fetchImageData(from: user.avatarUrl) { [weak self] result in
-//            switch result {
-//            case .success(let imageData):
-//                content.image = UIImage(data: imageData)
-//                cell.contentConfiguration = content
-//            case .failure(let error):
-//                print(error)
-////                self?.showAlert(withStatus: .failed)
-//            }
-//        }
-//        return content
-//    }
-
-
-
-
-
-
-
-
+extension UsersListViewController {
+    
+    private func fetchUsers() {
+        networkManager.fetchUser { [weak self] result in
+            switch result {
+            case .success(let users):
+                print(users)
+                //self?.showAlert(withStatus: .success)
+                self?.users = users
+                self?.tableView.reloadData()
+            case .failure(let error):
+                print(error)
+                // self?.showAlert(withStatus: .failed)
+            }
+        }
+    }
+    
+}
 
