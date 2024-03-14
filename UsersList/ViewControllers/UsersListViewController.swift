@@ -15,7 +15,8 @@ final class UsersListViewController: UIViewController {
     
     private var users: [User] = []
     private var filteredUsers: [User] = []
-    private var searchBarIsEmpty: Bool { // возвращает true если строка поиска пустая
+    // возвращает true если строка поиска пустая
+    private var searchBarIsEmpty: Bool {
         guard let text = searchController.searchBar.text else { return false }
         return text.isEmpty
     }
@@ -27,13 +28,19 @@ final class UsersListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = .white
-        setupTableView()
-//        setupSearchBar()
+        setupViews()
         setupSearchController()
         fetchUsers()
-        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+    
+    private func setupViews() {
+        view.backgroundColor = .white
+        setupTableView()
     }
     
     func setupTableView() {

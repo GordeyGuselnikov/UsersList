@@ -7,7 +7,7 @@
 
 import UIKit
 
-class UserCell: UITableViewCell {
+final class UserCell: UITableViewCell {
     var user: User!
 //    private var additionalLabel: UILabel!
     private let networkManager = NetworkManager.shared
