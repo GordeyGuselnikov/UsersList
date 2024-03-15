@@ -12,6 +12,8 @@ enum NetworkError: Error {
     case noData
     case decodingError
     case serverError
+    case networkError
+    case invalidResponse
 }
 
 final class NetworkManager {
@@ -21,7 +23,8 @@ final class NetworkManager {
     
     func fetchImageData(from urlString: String, completion: @escaping(Result<Data, NetworkError>) -> Void) {
         guard let url = URL(string: urlString) else {
-            fatalError("error")
+            completion(.failure(.invalidURL))
+            return
         }
         
         DispatchQueue.global().async {
@@ -36,11 +39,12 @@ final class NetworkManager {
     }
         
     func fetchUser(completion: @escaping(Result<[User], NetworkError>) -> Void) {
-        print("try to fetch user data")
+        print("Attempting to fetch user data")
         let urlString = "https://stoplight.io/mocks/kode-api/trainee-test/331141861/users"
         
         guard let url = URL(string: urlString) else {
-            fatalError("error")
+            completion(.failure(.invalidURL))
+            return
         }
         
         var request = URLRequest(url: url)
@@ -49,21 +53,28 @@ final class NetworkManager {
         request.setValue("code=200, example=success", forHTTPHeaderField: "Prefer")
         
         URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data, let response else {
-                completion(.failure(.noData))
+            guard error == nil else {
+                completion(.failure(.networkError))
                 print(error?.localizedDescription ?? "No error description")
                 return
             }
             
-            print(response)
+            guard let httpResponse = response as? HTTPURLResponse else {
+                completion(.failure(.invalidResponse))
+                return
+            }
+            print("Status code: \(httpResponse.statusCode)")
             
-            let httpResponse = response as? HTTPURLResponse
-            print("status code: \(httpResponse?.statusCode ?? 0)")
-            
-            guard httpResponse?.statusCode != 500 else {
+            guard (200..<300).contains(httpResponse.statusCode) else {
                 completion(.failure(.serverError))
                 return
             }
+            
+            guard let data = data else {
+                completion(.failure(.noData))
+                return
+            }
+            
             
             do {
                 let decoder = JSONDecoder()
@@ -73,7 +84,7 @@ final class NetworkManager {
                 }
             } catch {
                 completion(.failure(.decodingError))
-                print(error.localizedDescription)
+                print("Decoding error: \(error.localizedDescription)")
             }
             
         }.resume()
