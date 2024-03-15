@@ -37,7 +37,7 @@ final class NetworkManager {
         
     func fetchUser(completion: @escaping(Result<[User], NetworkError>) -> Void) {
         print("try to fetch user data")
-        let urlString = "https://stoplight.io/mocks/kode-education/trainee-test/25143926/users"
+        let urlString = "https://stoplight.io/mocks/kode-api/trainee-test/331141861/users"
         
         guard let url = URL(string: urlString) else {
             fatalError("error")
@@ -46,7 +46,7 @@ final class NetworkManager {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("code=200, dynamic=true", forHTTPHeaderField: "Prefer")
+        request.setValue("code=200, example=success", forHTTPHeaderField: "Prefer")
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data, let response else {

@@ -31,7 +31,7 @@ struct User: Decodable {
 enum Departments: String, CodingKey, Decodable, CaseIterable {
     case all
     case android
-    case iOS = "ios"
+    case ios
     case design
     case management
     case qa
@@ -49,7 +49,7 @@ enum Departments: String, CodingKey, Decodable, CaseIterable {
             return "Все"
         case .android:
             return "Android"
-        case .iOS:
+        case .ios:
             return "iOS"
         case .design:
             return "Дизайн"
