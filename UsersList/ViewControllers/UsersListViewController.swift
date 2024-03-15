@@ -11,7 +11,6 @@ final class UsersListViewController: UIViewController {
     
     let tableView = UITableView()
     private let searchController = UISearchController(searchResultsController: nil)
-//    private let searchBar = UISearchBar()
     
     private var users: [User] = []
     private var filteredUsers: [User] = []
@@ -29,32 +28,30 @@ final class UsersListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
-        setupSearchController()
         fetchUsers()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: animated)
+        
     }
     
     private func setupViews() {
         view.backgroundColor = .white
         setupTableView()
+        setupSearchController()
     }
     
     func setupTableView() {
-        view.addSubview(tableView)
         tableView.rowHeight = 80
         tableView.separatorStyle = .none
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(tableView)
+        
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
-//        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(UserCell.self, forCellReuseIdentifier: "cell")
+        
         tableView.dataSource = self
         tableView.delegate = self
     }
@@ -69,12 +66,12 @@ extension UsersListViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-//        guard let cell = cell as? UserCell else { return UITableViewCell() }
-        let cell = UserCell()
-    
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? UserCell else {
+            return UITableViewCell()
+        }
+        
         let user = users[indexPath.row]
-//        cell.fullName = user.fullName
+//        let user = isFiltering ? filteredUsers[indexPath.row] : users[indexPath.row]
         cell.user = user
         
         return cell
@@ -90,12 +87,9 @@ extension UsersListViewController: UISearchResultsUpdating {
         searchController.searchBar.placeholder = "Введи имя, тег, почту..."
         searchController.searchBar.tintColor = .purple
         searchController.searchBar.setValue("Отмена", forKey: "cancelButtonText")
-//        navigationItem.hidesSearchBarWhenScrolling = false
-//        searchController.hidesNavigationBarDuringPresentation = false
-//        navigationItem.searchController = searchController
-//        searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+        navigationItem.searchController = searchController
         definesPresentationContext = true
-        tableView.tableHeaderView = searchController.searchBar
     }
     
     
@@ -105,7 +99,8 @@ extension UsersListViewController: UISearchResultsUpdating {
     
     private func filterContentForSearchText(_ searchText: String) {
         filteredUsers = users.filter({ (user: User) -> Bool in
-            return user.fullName.lowercased().contains(searchText.lowercased())
+            return user.fullName.lowercased().contains(searchText.lowercased()) ||
+            user.userTag.lowercased().contains(searchText.lowercased())
         })
         
         tableView.reloadData()
