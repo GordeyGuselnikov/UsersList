@@ -32,8 +32,14 @@ final class UsersListViewController: UIViewController {
         
     }
     
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//        navigationController?.setNavigationBarHidden(true, animated: animated)
+//    }
+    
     private func setupViews() {
         view.backgroundColor = .white
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         setupTableView()
         setupSearchController()
     }
@@ -45,11 +51,12 @@ final class UsersListViewController: UIViewController {
         view.addSubview(tableView)
         
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ])
+                tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+                tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+                tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+                tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            ])
+        
         tableView.register(UserCell.self, forCellReuseIdentifier: "cell")
         
         tableView.dataSource = self
@@ -58,6 +65,7 @@ final class UsersListViewController: UIViewController {
     
 }
 
+// MARK: - UITableViewDelegate, UITableViewDataSource
 extension UsersListViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -70,15 +78,23 @@ extension UsersListViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         
-        let user = users[indexPath.row]
-//        let user = isFiltering ? filteredUsers[indexPath.row] : users[indexPath.row]
+//        let user = users[indexPath.row]
+        let user = isFiltering ? filteredUsers[indexPath.row] : users[indexPath.row]
         cell.user = user
         
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedUser = users[indexPath.row]
+        let detailViewController = DetailViewController()
+        detailViewController.user = selectedUser
+        navigationController?.pushViewController(detailViewController, animated: true)
+    }
+    
 }
 
+// MARK: - UISearchResultsUpdating
 extension UsersListViewController: UISearchResultsUpdating {
     
     private func setupSearchController() {
@@ -90,6 +106,17 @@ extension UsersListViewController: UISearchResultsUpdating {
         navigationItem.hidesSearchBarWhenScrolling = false
         navigationItem.searchController = searchController
         definesPresentationContext = true
+        
+        searchController.searchBar.autocapitalizationType = .none
+        
+        searchController.searchBar.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(searchController.searchBar)
+        
+        NSLayoutConstraint.activate([
+            searchController.searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 6),
+            searchController.searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            searchController.searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+        ])
     }
     
     

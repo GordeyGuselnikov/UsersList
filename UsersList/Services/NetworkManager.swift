@@ -27,11 +27,15 @@ final class NetworkManager {
             return
         }
         
+        // Загрузка изображения выполняется асинхронно в глобальной очереди
+        // Операция загрузки не блокирует основной поток выполнения приложения,
+        // что позволяет приложению оставаться отзывчивым во время загрузки.
         DispatchQueue.global().async {
             guard let imageData = try? Data(contentsOf: url) else {
                 completion(.failure(.noData))
                 return
             }
+            // После успешной загрузки данных переключаемся на основной поток (поток UI)
             DispatchQueue.main.async {
                 completion(.success(imageData))
             }
@@ -74,7 +78,6 @@ final class NetworkManager {
                 completion(.failure(.noData))
                 return
             }
-            
             
             do {
                 let decoder = JSONDecoder()

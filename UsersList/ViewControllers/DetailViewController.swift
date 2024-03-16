@@ -18,22 +18,41 @@ final class DetailViewController: UIViewController {
         super.viewDidLoad()
 
         setupViews()
+        setupUser()
         // Do any additional setup after loading the view.
         
     }
     
     private func setupViews() {
         view.addSubview(photoImageView)
-        configurePhotoImageView()
-    }
-    
-    private func configurePhotoImageView() {
+        view.backgroundColor = .white
+        photoImageView.backgroundColor = .white
+        
+        photoImageView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            photoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            photoImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            photoImageView.widthAnchor.constraint(equalToConstant: 104), // Размеры вашего изображения
+            photoImageView.heightAnchor.constraint(equalToConstant: 104) // Размеры вашего изображения
+        ])
+        
         photoImageView.layer.cornerRadius = 52
         photoImageView.clipsToBounds = true
         photoImageView.contentMode = .scaleAspectFill
+        
     }
     
-    private func setValues(for user: User) {
+//    private func configurePhotoImageView() {
+//        
+//    }
+    
+    private func setupUser() {
+        guard let user = user else { return }
+        setImage(for: user)
+    }
+    
+    private func setImage(for user: User) {
+        
         networkManager.fetchImageData(from: user.avatarUrl) { [weak self] result in
             switch result {
             case .success(let imageData):
