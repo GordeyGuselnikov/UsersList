@@ -32,8 +32,8 @@ final class DetailViewController: UIViewController {
         NSLayoutConstraint.activate([
             photoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             photoImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            photoImageView.widthAnchor.constraint(equalToConstant: 104), // Размеры вашего изображения
-            photoImageView.heightAnchor.constraint(equalToConstant: 104) // Размеры вашего изображения
+            photoImageView.widthAnchor.constraint(equalToConstant: 104),
+            photoImageView.heightAnchor.constraint(equalToConstant: 104)
         ])
         
         photoImageView.layer.cornerRadius = 52
