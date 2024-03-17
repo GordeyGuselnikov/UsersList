@@ -9,18 +9,17 @@ import UIKit
 
 final class UsersListViewController: UIViewController {
     
-    let tableView = UITableView()
+    // MARK: - Private Properties
+    private let tableView = UITableView()
     private let searchBar = UISearchBar()
     
     private var users: [User] = []
     private var filteredUsers: [User] = []
-    
     // Возвращает true, если строка поиска пустая
     private var searchBarIsEmpty: Bool {
         guard let text = searchBar.text else { return false }
         return text.isEmpty
     }
-    
     // Показывает, происходит ли фильтрация
     private var isFiltering: Bool {
         return !searchBarIsEmpty
@@ -28,12 +27,14 @@ final class UsersListViewController: UIViewController {
 
     private let networkManager = NetworkManager.shared
     
+    // MARK: - Life Cycles Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
         fetchUsers()
     }
     
+    // MARK: - Private Methods
     private func setupViews() {
         view.backgroundColor = .white
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
@@ -87,10 +88,12 @@ final class UsersListViewController: UIViewController {
 // MARK: - UITableViewDelegate, UITableViewDataSource
 extension UsersListViewController: UITableViewDelegate, UITableViewDataSource {
     
+    // Количество строк в таблице.
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return isFiltering ? filteredUsers.count : users.count
     }
     
+    // Настройка ячейки для конкретного индекса
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? UserCell else {
             return UITableViewCell()
@@ -102,6 +105,7 @@ extension UsersListViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
+    // Обработка выбранной ячейки
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedUser = isFiltering ? filteredUsers[indexPath.row] : users[indexPath.row]
         let detailViewController = DetailViewController()
@@ -112,20 +116,24 @@ extension UsersListViewController: UITableViewDelegate, UITableViewDataSource {
 
 // MARK: - UISearchBarDelegate
 extension UsersListViewController: UISearchBarDelegate {
+    // Вызывается, когда пользователь начинает редактировать текст в поисковом поле
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(true, animated: true)
     }
     
+    // Вызывается, когда изменяется текст в поисковом поле
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         filterContentForSearchText(searchText)
     }
     
+    // Вызывается, когда пользователь нажимает кнопку "Отмена" в поисковом поле
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(false, animated: true)
         searchBar.resignFirstResponder()
         searchBar.text = nil
     }
     
+    // Фильтрация контента по тексту поиска
     private func filterContentForSearchText(_ searchText: String) {
         filteredUsers = users.filter { user in
             return user.fullName.lowercased().contains(searchText.lowercased()) ||
@@ -135,8 +143,9 @@ extension UsersListViewController: UISearchBarDelegate {
     }
 }
 
+
 extension UsersListViewController {
-    
+    // Загрузка данных из сети
     private func fetchUsers() {
         networkManager.fetchUser { [weak self] result in
             switch result {

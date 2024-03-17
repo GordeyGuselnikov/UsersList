@@ -9,20 +9,21 @@ import UIKit
 
 final class DetailViewController: UIViewController {
     
+    // MARK: - Public Properties
     var user: User!
     
-    let photoImageView = UIImageView()
+    // MARK: - Private Properties
+    private let photoImageView = UIImageView()
     private let networkManager = NetworkManager.shared
 
+    // MARK: - Life Cycles Methods
     override func viewDidLoad() {
         super.viewDidLoad()
-
         setupViews()
         setupUser()
-        // Do any additional setup after loading the view.
-        
     }
     
+    // MARK: - Private Methods
     private func setupViews() {
         view.addSubview(photoImageView)
         view.backgroundColor = .white
@@ -52,7 +53,6 @@ final class DetailViewController: UIViewController {
     }
     
     private func setImage(for user: User) {
-        
         networkManager.fetchImageData(from: user.avatarUrl) { [weak self] result in
             switch result {
             case .success(let imageData):
@@ -64,14 +64,4 @@ final class DetailViewController: UIViewController {
             }
         }
     }
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
