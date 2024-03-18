@@ -47,6 +47,7 @@ final class UsersListViewController: UIViewController {
         tableView.rowHeight = 80
         tableView.separatorStyle = .none
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        
         view.addSubview(tableView)
         
         NSLayoutConstraint.activate([
@@ -57,20 +58,38 @@ final class UsersListViewController: UIViewController {
         ])
         
         tableView.register(UserCell.self, forCellReuseIdentifier: "cell")
+        
         tableView.dataSource = self
         tableView.delegate = self
     }
     
     private func setupSearchBar() {
         searchBar.searchBarStyle = .minimal
-        searchBar.placeholder = "Введи имя, тег, почту..."
-        searchBar.tintColor = .purple
+//        searchBar.placeholder = "Введи имя, тег, почту..."
+//        searchBar.tintColor = .purple
+        searchBar.setImage(UIImage(named: "lightSearch"), for: .search, state: .normal)
+        searchBar.searchTextField.attributedPlaceholder = NSAttributedString(
+            string: "Введи имя, тег, почту ...",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor(red: 0.76, green: 0.76, blue: 0.78, alpha: 1)]
+        )
+        if let textField = searchBar.value(forKey: "searchField") as? UITextField {
+            textField.tintColor = UIColor(red: 0.396, green: 0.204, blue: 1, alpha: 1)
+        }
+        searchBar.setImage(UIImage(named: "filter"), for: .bookmark, state: .normal)
+        searchBar.showsBookmarkButton = true
+        searchBar.setImage(UIImage(named: "X"), for: .clear, state: .normal)
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchBar.showsCancelButton = false
-        if let cancelButton = searchBar.value(forKey: "cancelButton") as? UIButton {
-            cancelButton.setTitle("Отмена", for: .normal)
-            cancelButton.setTitleColor(.black, for: .normal) // Устанавливаем цвет текста
-        }
+//        if let cancelButton = searchBar.value(forKey: "cancelButton") as? UIButton {
+//            cancelButton.setTitle("Отмена", for: .normal)
+//            cancelButton.setTitleColor(.black, for: .normal) // Устанавливаем цвет текста
+//        }
+        
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).title = "Отмена"
+        let cancelButtonAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor(red: 0.396, green: 0.204, blue: 1, alpha: 1),
+            .font: UIFont.systemFont(ofSize: 16)]
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes(cancelButtonAttributes, for: .normal)
         searchBar.autocapitalizationType = .none
         
         view.addSubview(searchBar)
@@ -119,6 +138,8 @@ extension UsersListViewController: UISearchBarDelegate {
     // Вызывается, когда пользователь начинает редактировать текст в поисковом поле
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(true, animated: true)
+        searchBar.showsBookmarkButton = false
+        searchBar.setImage(UIImage(named: "darkSearch"), for: .search, state: .normal)
     }
     
     // Вызывается, когда изменяется текст в поисковом поле
@@ -129,8 +150,11 @@ extension UsersListViewController: UISearchBarDelegate {
     // Вызывается, когда пользователь нажимает кнопку "Отмена" в поисковом поле
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(false, animated: true)
+        searchBar.showsBookmarkButton = true
+        searchBar.setImage(UIImage(named: "lightSearch"), for: .search, state: .normal)
         searchBar.resignFirstResponder()
         searchBar.text = nil
+        tableView.reloadData()
     }
     
     // Фильтрация контента по тексту поиска
@@ -141,8 +165,20 @@ extension UsersListViewController: UISearchBarDelegate {
         }
         tableView.reloadData()
     }
+    
+    // Вызывается при нажатии кнопки Filter
+    func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
+        print("searchBarBookmarkButtonClicked")
+        let secondVC = SortViewController()
+        
+        let navVC = UINavigationController(rootViewController: secondVC)
+        if let sheet = navVC.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+        }
+        navigationController?.present(navVC, animated: true)
+    }
+    
 }
-
 
 extension UsersListViewController {
     // Загрузка данных из сети

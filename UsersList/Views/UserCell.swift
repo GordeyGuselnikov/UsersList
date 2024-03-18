@@ -24,8 +24,8 @@ final class UserCell: UITableViewCell {
         content.text = user.fullName + " " + user.userTag.lowercased()
         content.secondaryText = user.position
         content.secondaryTextProperties.color = UIColor(red: 0.333, green: 0.333, blue: 0.361, alpha: 1)
-        // content.image = UIImage(systemName: "bicycle")
-        content.image = UIImage(named: "goose")
+        
+//        content.image = UIImage(named: "goose")
         content.imageProperties.maximumSize = CGSize(width: widthImage, height: widthImage)
         content.imageProperties.cornerRadius = CGFloat(widthImage / 2)
         

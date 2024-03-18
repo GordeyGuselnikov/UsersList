@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		8F3B14FD2BA1908900119749 /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3B14FC2BA1908900119749 /* UserCell.swift */; };
 		8F3B14FF2BA38D2200119749 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3B14FE2BA38D2200119749 /* DetailViewController.swift */; };
+		8F686F202BA8324E001ED802 /* SortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F686F1F2BA8324E001ED802 /* SortViewController.swift */; };
 		D409734D2B96BFFD00EA7310 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D409734C2B96BFFD00EA7310 /* AppDelegate.swift */; };
 		D409734F2B96BFFD00EA7310 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D409734E2B96BFFD00EA7310 /* SceneDelegate.swift */; };
 		D40973512B96BFFD00EA7310 /* UsersListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40973502B96BFFD00EA7310 /* UsersListViewController.swift */; };
@@ -41,6 +42,7 @@
 /* Begin PBXFileReference section */
 		8F3B14FC2BA1908900119749 /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
 		8F3B14FE2BA38D2200119749 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
+		8F686F1F2BA8324E001ED802 /* SortViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortViewController.swift; sourceTree = "<group>"; };
 		D40973492B96BFFD00EA7310 /* UsersList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UsersList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D409734C2B96BFFD00EA7310 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D409734E2B96BFFD00EA7310 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 			children = (
 				D40973502B96BFFD00EA7310 /* UsersListViewController.swift */,
 				8F3B14FE2BA38D2200119749 /* DetailViewController.swift */,
+				8F686F1F2BA8324E001ED802 /* SortViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -324,6 +327,7 @@
 			files = (
 				D40973822B9B918B00EA7310 /* User.swift in Sources */,
 				D40973512B96BFFD00EA7310 /* UsersListViewController.swift in Sources */,
+				8F686F202BA8324E001ED802 /* SortViewController.swift in Sources */,
 				8F3B14FD2BA1908900119749 /* UserCell.swift in Sources */,
 				D40973852B9B945500EA7310 /* NetworkManager.swift in Sources */,
 				D409734D2B96BFFD00EA7310 /* AppDelegate.swift in Sources */,
@@ -502,6 +506,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M9QM497LW6;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = UsersList/App/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -533,6 +538,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M9QM497LW6;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = UsersList/App/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
