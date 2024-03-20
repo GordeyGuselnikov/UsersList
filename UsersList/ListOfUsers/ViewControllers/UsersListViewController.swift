@@ -34,10 +34,16 @@ final class UsersListViewController: UIViewController {
         fetchUsers()
     }
     
+    // MARK: - Override Methods
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        view.endEditing(true)
+        
+    }
+    
     // MARK: - Private Methods
     private func setupViews() {
         view.backgroundColor = .white
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         
         setupSearchBar()
         setupTableView()
@@ -47,6 +53,7 @@ final class UsersListViewController: UIViewController {
         tableView.rowHeight = 80
         tableView.separatorStyle = .none
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.showsVerticalScrollIndicator = false
         
         view.addSubview(tableView)
         
@@ -57,7 +64,7 @@ final class UsersListViewController: UIViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         
-        tableView.register(UserCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(UserCell.self, forCellReuseIdentifier: "userCell")
         
         tableView.dataSource = self
         tableView.delegate = self
@@ -65,8 +72,6 @@ final class UsersListViewController: UIViewController {
     
     private func setupSearchBar() {
         searchBar.searchBarStyle = .minimal
-//        searchBar.placeholder = "Введи имя, тег, почту..."
-//        searchBar.tintColor = .purple
         searchBar.setImage(UIImage(named: "lightSearch"), for: .search, state: .normal)
         searchBar.searchTextField.attributedPlaceholder = NSAttributedString(
             string: "Введи имя, тег, почту ...",
@@ -77,13 +82,9 @@ final class UsersListViewController: UIViewController {
         }
         searchBar.setImage(UIImage(named: "filter"), for: .bookmark, state: .normal)
         searchBar.showsBookmarkButton = true
-        searchBar.setImage(UIImage(named: "X"), for: .clear, state: .normal)
+        searchBar.setImage(UIImage(named: "x"), for: .clear, state: .normal)
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchBar.showsCancelButton = false
-//        if let cancelButton = searchBar.value(forKey: "cancelButton") as? UIButton {
-//            cancelButton.setTitle("Отмена", for: .normal)
-//            cancelButton.setTitleColor(.black, for: .normal) // Устанавливаем цвет текста
-//        }
         
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).title = "Отмена"
         let cancelButtonAttributes: [NSAttributedString.Key: Any] = [
@@ -98,6 +99,7 @@ final class UsersListViewController: UIViewController {
             searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 6),
             searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            searchBar.heightAnchor.constraint(equalToConstant: 40)
         ])
         
         searchBar.delegate = self
@@ -109,12 +111,14 @@ extension UsersListViewController: UITableViewDelegate, UITableViewDataSource {
     
     // Количество строк в таблице.
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return isFiltering ? filteredUsers.count : users.count
+        return isFiltering
+            ? filteredUsers.count
+            : users.count
     }
     
     // Настройка ячейки для конкретного индекса
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? UserCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "userCell", for: indexPath) as? UserCell else {
             return UITableViewCell()
         }
         
@@ -126,6 +130,9 @@ extension UsersListViewController: UITableViewDelegate, UITableViewDataSource {
     
     // Обработка выбранной ячейки
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        //снимать выделение с выбранной ячейки
+        tableView.deselectRow(at: indexPath, animated: true)
+        
         let selectedUser = isFiltering ? filteredUsers[indexPath.row] : users[indexPath.row]
         let detailViewController = DetailViewController()
         detailViewController.user = selectedUser
@@ -137,9 +144,10 @@ extension UsersListViewController: UITableViewDelegate, UITableViewDataSource {
 extension UsersListViewController: UISearchBarDelegate {
     // Вызывается, когда пользователь начинает редактировать текст в поисковом поле
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.setImage(UIImage(named: "darkSearch"), for: .search, state: .normal)
+        searchBar.placeholder = ""
         searchBar.setShowsCancelButton(true, animated: true)
         searchBar.showsBookmarkButton = false
-        searchBar.setImage(UIImage(named: "darkSearch"), for: .search, state: .normal)
     }
     
     // Вызывается, когда изменяется текст в поисковом поле
@@ -149,12 +157,18 @@ extension UsersListViewController: UISearchBarDelegate {
     
     // Вызывается, когда пользователь нажимает кнопку "Отмена" в поисковом поле
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.setImage(UIImage(named: "lightSearch"), for: .search, state: .normal)
+        searchBar.placeholder = "Введи имя, тег, почту ..."
         searchBar.setShowsCancelButton(false, animated: true)
         searchBar.showsBookmarkButton = true
-        searchBar.setImage(UIImage(named: "lightSearch"), for: .search, state: .normal)
         searchBar.resignFirstResponder()
         searchBar.text = nil
         tableView.reloadData()
+    }
+    
+    // Вызывается при нажатии на кнопку Search на клавиатуре
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
     
     // Фильтрация контента по тексту поиска
