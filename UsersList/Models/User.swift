@@ -5,7 +5,6 @@
 //  Created by Gordey Guselnikov on 3/9/24.
 //
 
-
 // MARK: - Query
 struct Query: Decodable {
     let items: [User]
@@ -24,15 +23,15 @@ struct User: Decodable {
     let phone: String
     
     var fullName: String {
-            "\(firstName) \(lastName)"
-        }
+        "\(firstName) \(lastName)"
+    }
 }
 
 // MARK: - Departments
 enum Departments: String, CodingKey, Decodable, CaseIterable {
     case all
     case android
-    case iOS = "ios"
+    case ios
     case design
     case management
     case qa
@@ -50,7 +49,7 @@ enum Departments: String, CodingKey, Decodable, CaseIterable {
             return "Все"
         case .android:
             return "Android"
-        case .iOS:
+        case .ios:
             return "iOS"
         case .design:
             return "Дизайн"
@@ -75,4 +74,3 @@ enum Departments: String, CodingKey, Decodable, CaseIterable {
         }
     }
 }
-

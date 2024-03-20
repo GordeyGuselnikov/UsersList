@@ -12,6 +12,8 @@ enum NetworkError: Error {
     case noData
     case decodingError
     case serverError
+    case networkError
+    case invalidResponse
 }
 
 final class NetworkManager {
@@ -19,13 +21,21 @@ final class NetworkManager {
     
     private init () {}
     
-    func fetchImageData(from url: URL, completion: @escaping(Result<Data, NetworkError>) -> Void) {
+    func fetchImageData(from urlString: String, completion: @escaping(Result<Data, NetworkError>) -> Void) {
+        guard let url = URL(string: urlString) else {
+            completion(.failure(.invalidURL))
+            return
+        }
         
+        // Загрузка изображения выполняется асинхронно в глобальной очереди
+        // Операция загрузки не блокирует основной поток выполнения приложения,
+        // что позволяет приложению оставаться отзывчивым во время загрузки.
         DispatchQueue.global().async {
             guard let imageData = try? Data(contentsOf: url) else {
                 completion(.failure(.noData))
                 return
             }
+            // После успешной загрузки данных переключаемся на основной поток (поток UI)
             DispatchQueue.main.async {
                 completion(.success(imageData))
             }
@@ -33,44 +43,51 @@ final class NetworkManager {
     }
         
     func fetchUser(completion: @escaping(Result<[User], NetworkError>) -> Void) {
-        print("try to fetch user data")
-        let urlString = "https://stoplight.io/mocks/kode-education/trainee-test/25143926/users"
+        print("Attempting to fetch user data")
+        let urlString = "https://stoplight.io/mocks/kode-api/trainee-test/331141861/users"
         
         guard let url = URL(string: urlString) else {
-            fatalError("error")
+            completion(.failure(.invalidURL))
+            return
         }
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("code=200, dynamic=true", forHTTPHeaderField: "Prefer")
+        request.setValue("code=200, example=success", forHTTPHeaderField: "Prefer")
         
         URLSession.shared.dataTask(with: request) { data, response, error in
+            guard error == nil else {
+                completion(.failure(.networkError))
+                print(error?.localizedDescription ?? "No error description")
+                return
+            }
             
-            let httpResponse = response as? HTTPURLResponse
-            print("status code: \(httpResponse?.statusCode ?? 0)")
+            guard let httpResponse = response as? HTTPURLResponse else {
+                completion(.failure(.invalidResponse))
+                return
+            }
+            print("Status code: \(httpResponse.statusCode)")
             
-            guard httpResponse?.statusCode != 500 else {
+            guard (200..<300).contains(httpResponse.statusCode) else {
                 completion(.failure(.serverError))
                 return
             }
             
-            guard let data else {
+            guard let data = data else {
                 completion(.failure(.noData))
-                print(error?.localizedDescription ?? "No error description")
                 return
             }
             
             do {
                 let decoder = JSONDecoder()
-                // decoder.keyDecodingStrategy = .convertFromSnakeCase
                 let dataModel = try decoder.decode(Query.self, from: data)
                 DispatchQueue.main.async {
                     completion(.success(dataModel.items))
                 }
             } catch {
                 completion(.failure(.decodingError))
-                print(error.localizedDescription)
+                print("Decoding error: \(error.localizedDescription)")
             }
             
         }.resume()
