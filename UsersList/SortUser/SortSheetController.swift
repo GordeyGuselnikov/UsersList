@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class SortViewController: UIViewController {
+final class SortSheetController: UIViewController {
 
     // MARK: - Private Properties
     

@@ -35,6 +35,12 @@ final class DetailViewController: UIViewController {
         setupUser()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // Show the Navigation Bar
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+    
     // MARK: - Private Methods
     private func setupViews() {
         view.addSubview(containerView)

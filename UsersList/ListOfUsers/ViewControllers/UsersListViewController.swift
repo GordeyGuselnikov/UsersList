@@ -32,10 +32,12 @@ final class UsersListViewController: UIViewController {
         super.viewDidLoad()
         setupViews()
         fetchUsers()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // Hide the Navigation Bar
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
@@ -188,13 +190,15 @@ extension UsersListViewController: UISearchBarDelegate {
     // Вызывается при нажатии кнопки Filter
     func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
         print("searchBarBookmarkButtonClicked")
-        let secondVC = SortViewController()
+        let secondVC = SortSheetController()
         
-        let navVC = UINavigationController(rootViewController: secondVC)
-        if let sheet = navVC.sheetPresentationController {
-            sheet.detents = [.medium(), .large()]
+        let navigationVC = UINavigationController(rootViewController: secondVC)
+        if let sheetController = navigationVC.sheetPresentationController {
+            sheetController.detents = [.medium(), .large()]
+            sheetController.prefersGrabberVisible = true
+            sheetController.preferredCornerRadius = 20
         }
-        navigationController?.present(navVC, animated: true)
+        navigationController?.present(navigationVC, animated: true)
     }
     
 }
