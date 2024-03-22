@@ -20,6 +20,7 @@ final class UserCell: UITableViewCell {
     // Обновление конфигурации ячейки при изменении состояния
     override func updateConfiguration(using state: UICellConfigurationState) {
         // var content = self.defaultContentConfiguration().updated(for: state)
+
         var content = self.defaultContentConfiguration()
         content.text = user.fullName + " " + user.userTag.lowercased()
         content.secondaryText = user.position

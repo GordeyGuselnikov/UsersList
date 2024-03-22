@@ -7,6 +7,11 @@
 
 import UIKit
 
+// Протокол для передачи sortType с SortSheet в этот Контроллер
+protocol SortSheetControllerDelegate: AnyObject {
+    func setSort(sortType: SortType)
+}
+
 final class UsersListViewController: UIViewController {
     
     // MARK: - Private Properties
@@ -26,6 +31,7 @@ final class UsersListViewController: UIViewController {
     }
 
     private let networkManager = NetworkManager.shared
+    private var currentSortType: SortType = .alphabet
     
     // MARK: - Life Cycles Methods
     override func viewDidLoad() {
@@ -194,16 +200,19 @@ extension UsersListViewController: UISearchBarDelegate {
         tableView.reloadData()
     }
     
-    // Вызывается при нажатии кнопки Filter
+    // Вызывается при нажатии кнопки BookmarkButton (Сортировка)
     func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
         print("searchBarBookmarkButtonClicked")
         let sheetVC = SortSheetController()
         let navigationVC = UINavigationController(rootViewController: sheetVC)
         
+        sheetVC.sortDelegate = self
+        sheetVC.selectedSortType = currentSortType
+        
         if let sheet = navigationVC.sheetPresentationController {
             sheet.detents = [.medium(), .large()]
-            sheet.prefersGrabberVisible = true
             sheet.preferredCornerRadius = 20
+            sheet.prefersGrabberVisible = true
         }
         navigationController?.present(navigationVC, animated: true)
     }
@@ -218,10 +227,38 @@ extension UsersListViewController {
             case .success(let users):
                 print(users)
                 self?.users = users
+                
+                switch self?.currentSortType {
+                case .alphabet:
+                    self?.users.sort { $0.fullName < $1.fullName }
+                case .birthday:
+                    self?.users.sort { $0.birthday < $1.birthday }
+                case .none:
+                    break
+                }
                 self?.tableView.reloadData()
+                
             case .failure(let error):
                 print(error)
             }
         }
     }
+}
+
+// MARK: - SortSheetControllerDelegate
+extension UsersListViewController: SortSheetControllerDelegate {
+    func setSort(sortType: SortType) {
+        print("Current sortType: \(sortType)")
+        
+        switch sortType {
+        case .alphabet:
+            users.sort { $0.fullName < $1.fullName }
+        case .birthday:
+            users.sort { $0.birthday < $1.birthday }
+        }
+        currentSortType = sortType
+        tableView.reloadData()
+//        fetchUsers()
+    }
+    
 }

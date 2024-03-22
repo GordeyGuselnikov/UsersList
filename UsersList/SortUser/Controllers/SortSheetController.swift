@@ -12,6 +12,8 @@ enum SortType: String {
     case birthday = "По дню рождения"
 }
 
+
+
 final class SortSheetController: UIViewController {
 
     // MARK: - Private Properties
@@ -19,7 +21,9 @@ final class SortSheetController: UIViewController {
     private let sortByBirthdayRadioView = RadioButtonView()
     private var radioButtonView = RadioButtonView()
     
-    private var currentSortType: SortType = .alphabet
+    var selectedSortType: SortType?
+    
+    weak var sortDelegate: SortSheetControllerDelegate?
     
     // MARK: - Life Cycles Methods
     override func viewDidLoad() {
@@ -53,6 +57,8 @@ final class SortSheetController: UIViewController {
             sortByBirthdayRadioView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
             sortByBirthdayRadioView.heightAnchor.constraint(equalToConstant: 60)
         ])
+        
+        
     }
     
     private func configNavigationBar() {
@@ -80,11 +86,11 @@ final class SortSheetController: UIViewController {
         switch sortType {
         case .alphabet:
             radioButtonView = sortAlphabeticallyRadioView
-            sortAlphabeticallyRadioView.radioButton.isSelected = sortType == currentSortType
+            sortAlphabeticallyRadioView.radioButton.isSelected = sortType == selectedSortType
             
         case .birthday:
             radioButtonView = sortByBirthdayRadioView
-            sortByBirthdayRadioView.radioButton.isSelected = sortType == currentSortType
+            sortByBirthdayRadioView.radioButton.isSelected = sortType == selectedSortType
         }
         
         sortAlphabeticallyRadioView.radioButton.addTarget(
@@ -105,12 +111,14 @@ final class SortSheetController: UIViewController {
     @objc func sortAlphabeticallyRadioButtonTapped(_ sender: UIButton) {
         sender.isSelected = true
         sortByBirthdayRadioView.radioButton.isSelected = false
-        currentSortType = .alphabet
+//        selectedSortType = .alphabet
+        sortDelegate?.setSort(sortType: .alphabet)
     }
     
     @objc func sortByBirthdayRadioButtonTapped(_ sender: UIButton) {
         sender.isSelected = true
         sortAlphabeticallyRadioView.radioButton.isSelected = false
-        currentSortType = .birthday
+//        selectedSortType = .birthday
+        sortDelegate?.setSort(sortType: .birthday)
     }
 }
