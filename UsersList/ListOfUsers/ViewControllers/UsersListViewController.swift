@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  UsersListViewController.swift
 //  UsersList
 //
 //  Created by Gordey Guselnikov on 3/5/24.
@@ -79,10 +79,17 @@ final class UsersListViewController: UIViewController {
     
     private func setupSearchBar() {
         searchBar.searchBarStyle = .minimal
+        searchBar.searchTextField.layer.cornerRadius = 16
+        searchBar.searchTextField.clipsToBounds = true
         searchBar.setImage(UIImage(named: "lightSearch"), for: .search, state: .normal)
         searchBar.searchTextField.attributedPlaceholder = NSAttributedString(
             string: "Введи имя, тег, почту ...",
-            attributes: [NSAttributedString.Key.foregroundColor: UIColor(red: 0.76, green: 0.76, blue: 0.78, alpha: 1)]
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor(
+                red: 0.76,
+                green: 0.76,
+                blue: 0.78,
+                alpha: 1
+            )]
         )
         if let textField = searchBar.value(forKey: "searchField") as? UITextField {
             textField.tintColor = UIColor(red: 0.396, green: 0.204, blue: 1, alpha: 1)
@@ -90,7 +97,6 @@ final class UsersListViewController: UIViewController {
         searchBar.setImage(UIImage(named: "filter"), for: .bookmark, state: .normal)
         searchBar.showsBookmarkButton = true
         searchBar.setImage(UIImage(named: "x"), for: .clear, state: .normal)
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchBar.showsCancelButton = false
         
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).title = "Отмена"
@@ -102,6 +108,7 @@ final class UsersListViewController: UIViewController {
         
         view.addSubview(searchBar)
         
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 6),
             searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -190,13 +197,13 @@ extension UsersListViewController: UISearchBarDelegate {
     // Вызывается при нажатии кнопки Filter
     func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
         print("searchBarBookmarkButtonClicked")
-        let secondVC = SortSheetController()
+        let sheetVC = SortSheetController()
+        let navigationVC = UINavigationController(rootViewController: sheetVC)
         
-        let navigationVC = UINavigationController(rootViewController: secondVC)
-        if let sheetController = navigationVC.sheetPresentationController {
-            sheetController.detents = [.medium(), .large()]
-            sheetController.prefersGrabberVisible = true
-            sheetController.preferredCornerRadius = 20
+        if let sheet = navigationVC.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 20
         }
         navigationController?.present(navigationVC, animated: true)
     }
