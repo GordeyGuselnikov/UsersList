@@ -45,8 +45,6 @@ final class DetailViewController: UIViewController {
     private func setupViews() {
         view.addSubview(containerView)
         containerView.addSubview(photoImageView)
-//        containerView.addSubview(fullNameLabel)
-//        containerView.addSubview(userTagLabel)
         containerView.addSubview(nameStackView)
         nameStackView.addArrangedSubview(fullNameLabel)
         nameStackView.addArrangedSubview(userTagLabel)
@@ -103,7 +101,6 @@ final class DetailViewController: UIViewController {
             phoneView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
 
-        
     }
     
     private func setupBackButton() {
@@ -150,7 +147,7 @@ final class DetailViewController: UIViewController {
         positionLabel.textColor = UIColor(red: 0.333, green: 0.333, blue: 0.361, alpha: 1)
         positionLabel.font = UIFont(name: "Inter-Regular", size: 13)
         
-
+        // TODO: - Вынести в свой Formatter
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "ru_RU")
         dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -165,7 +162,6 @@ final class DetailViewController: UIViewController {
         let formatAgeString: String = NSLocalizedString("age_years", comment: "")
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let yearsOld = Calendar.current.dateComponents([.year], from: dateOfBirth, to: Date()).year
-//        print(yearsOld!)
         
         if let yearsOld = yearsOld {
             let resultAgeString: String = String.localizedStringWithFormat(formatAgeString, yearsOld)
@@ -173,7 +169,6 @@ final class DetailViewController: UIViewController {
         } else {
             print("Failed to calculate age!")
         }
-        
         
         phoneView.numberLabel.text = user.phone
     }
@@ -183,10 +178,8 @@ final class DetailViewController: UIViewController {
             switch result {
             case .success(let imageData):
                 self?.photoImageView.image = UIImage(data: imageData)
-//                self?.contentConfiguration = content
             case .failure(let error):
                 print(error)
-//                self?.showAlert(withStatus: .failed)
             }
         }
     }

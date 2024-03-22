@@ -55,8 +55,6 @@ final class SortSheetController: UIViewController {
             sortByBirthdayRadioView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
             sortByBirthdayRadioView.heightAnchor.constraint(equalToConstant: 60)
         ])
-        
-        
     }
     
     private func configNavigationBar() {

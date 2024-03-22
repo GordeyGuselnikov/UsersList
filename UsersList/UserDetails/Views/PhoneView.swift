@@ -29,7 +29,6 @@ final class PhoneView: UIView {
         configureProfilePhoneNumberLabel()
         configureProfilePhoneImage()
         
-        
         phoneImageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             phoneImageView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 16),
@@ -58,5 +57,4 @@ final class PhoneView: UIView {
         phoneImageView.contentMode = .scaleAspectFill
         phoneImageView.image = UIImage(named: "phone")
     }
-
 }

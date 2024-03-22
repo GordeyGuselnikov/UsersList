@@ -43,7 +43,6 @@ final class RadioButtonView: UIView {
             sortNameLabel.leadingAnchor.constraint(equalTo: radioButton.trailingAnchor, constant: 12),
             sortNameLabel.centerYAnchor.constraint(equalTo: radioButton.centerYAnchor)
         ])
-        
     }
     
     private func configureRadioButton() {

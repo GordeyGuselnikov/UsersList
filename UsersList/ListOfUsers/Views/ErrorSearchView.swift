@@ -10,8 +10,8 @@ import UIKit
 final class ErrorSearchView: UIView {
     // MARK: - Private Properties
     private let errorImageLabel = UILabel()
-    private let errorTitleLabel = UILabel()
-    private let errorDescriptionLabel = UILabel()
+    private let reasonLabel = UILabel()
+    private let adviceLabel = UILabel()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -25,8 +25,8 @@ final class ErrorSearchView: UIView {
     // MARK: - Setup Views
     private func setupViews() {
         addSubview(errorImageLabel)
-        addSubview(errorTitleLabel)
-        addSubview(errorDescriptionLabel)
+        addSubview(reasonLabel)
+        addSubview(adviceLabel)
         backgroundColor = .white
         
         configErrorImageView()
@@ -39,11 +39,11 @@ final class ErrorSearchView: UIView {
             errorImageLabel.heightAnchor.constraint(equalToConstant: 56),
             errorImageLabel.widthAnchor.constraint(equalToConstant: 56),
             
-            errorTitleLabel.topAnchor.constraint(equalTo: errorImageLabel.bottomAnchor, constant: 8),
-            errorTitleLabel.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor),
+            reasonLabel.topAnchor.constraint(equalTo: errorImageLabel.bottomAnchor, constant: 8),
+            reasonLabel.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor),
             
-            errorDescriptionLabel.topAnchor.constraint(equalTo: errorTitleLabel.bottomAnchor, constant: 12),
-            errorDescriptionLabel.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor)
+            adviceLabel.topAnchor.constraint(equalTo: reasonLabel.bottomAnchor, constant: 12),
+            adviceLabel.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor)
         ])
     }
     
@@ -54,18 +54,18 @@ final class ErrorSearchView: UIView {
     }
     
     private func configErrorTitleLabel() {
-        errorTitleLabel.text = "Мы никого не нашли"
-        errorTitleLabel.textColor = UIColor(red: 0.02, green: 0.02, blue: 0.063, alpha: 1)
-        errorTitleLabel.font = UIFont(name: "Inter-SemiBold", size: 17)
-        errorTitleLabel.textAlignment = .center
-        errorTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        reasonLabel.text = "Мы никого не нашли"
+        reasonLabel.textColor = UIColor(red: 0.02, green: 0.02, blue: 0.063, alpha: 1)
+        reasonLabel.font = UIFont(name: "Inter-SemiBold", size: 17)
+        reasonLabel.textAlignment = .center
+        reasonLabel.translatesAutoresizingMaskIntoConstraints = false
     }
     
     private func configDescriptionLabel() {
-        errorDescriptionLabel.text = "Попробуй скорректировать запрос"
-        errorDescriptionLabel.textColor = UIColor(red: 0.591, green: 0.591, blue: 0.609, alpha: 1)
-        errorDescriptionLabel.font = UIFont(name: "Inter-Regular", size: 16)
-        errorDescriptionLabel.textAlignment = .center
-        errorDescriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        adviceLabel.text = "Попробуй скорректировать запрос"
+        adviceLabel.textColor = UIColor(red: 0.591, green: 0.591, blue: 0.609, alpha: 1)
+        adviceLabel.font = UIFont(name: "Inter-Regular", size: 16)
+        adviceLabel.textAlignment = .center
+        adviceLabel.translatesAutoresizingMaskIntoConstraints = false
     }
 }

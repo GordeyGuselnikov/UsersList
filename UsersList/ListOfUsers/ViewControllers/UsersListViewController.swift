@@ -22,6 +22,7 @@ final class UsersListViewController: UIViewController {
     private let tabMenu = TabMenuCollectionView()
     private let tableView = UITableView()
     private var errorSearchView = ErrorSearchView()
+    private let criticalErrorView = CriticalErrorView()
     
     private var users: [User] = []
     private var filteredUsers: [User] = []
@@ -69,7 +70,9 @@ final class UsersListViewController: UIViewController {
         view.addSubview(tabMenu)
         view.addSubview(tableView)
         view.addSubview(errorSearchView)
+        view.addSubview(criticalErrorView)
         
+        setupCriticalErrorView()
         errorSearchView.isHidden = true
         
         configSearchBar()
@@ -105,7 +108,24 @@ final class UsersListViewController: UIViewController {
             errorSearchView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             errorSearchView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
-
+        
+        criticalErrorView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            criticalErrorView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            criticalErrorView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            criticalErrorView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            criticalErrorView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+    
+    private func setupCriticalErrorView() {
+        criticalErrorView.tryAgainButton.addTarget(self, action: #selector(requestAgain), for: .touchUpInside)
+        criticalErrorView.isHidden = true
+    }
+    
+    @objc private func requestAgain() {
+        print("Attempting to fetch user data again")
+        fetchUsers()
     }
     
     private func configTableView() {
@@ -291,8 +311,8 @@ extension UsersListViewController: UISearchBarDelegate {
     
 }
 
+// MARK: - Загрузка данных из сети
 extension UsersListViewController {
-    // Загрузка данных из сети
     private func fetchUsers() {
         networkManager.fetchUser { [weak self] result in
             switch result {

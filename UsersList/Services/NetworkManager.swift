@@ -55,6 +55,7 @@ final class NetworkManager {
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("code=200, example=success", forHTTPHeaderField: "Prefer")
+//        request.setValue("code=500, example=error-500", forHTTPHeaderField: "Prefer")
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard error == nil else {

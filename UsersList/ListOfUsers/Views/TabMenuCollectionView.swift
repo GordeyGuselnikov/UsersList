@@ -37,7 +37,6 @@ final class TabMenuCollectionView: UICollectionView {
         self.showsHorizontalScrollIndicator = false
         selectedIndexPath = IndexPath(item: 0, section: 0)
     }
-
 }
 
 // MARK: - UICollectionViewDelegate, UICollectionViewDataSource
