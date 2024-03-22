@@ -11,13 +11,12 @@ import UIKit
 protocol SortSheetControllerDelegate: AnyObject {
     func setSort(sortType: SortType)
 }
-
+// Протокол для передачи департамента с TabMenu в этот Контроллер
 protocol TabMenuCollectionViewDelegate: AnyObject {
     func setFilter(byDepartment: Departments)
 }
 
 final class UsersListViewController: UIViewController {
-    
     // MARK: - Private Properties
     private let tableView = UITableView()
     private let searchBar = UISearchBar()
@@ -25,28 +24,26 @@ final class UsersListViewController: UIViewController {
     
     private var users: [User] = []
     private var filteredUsers: [User] = []
+    private var currentSortType: SortType = .alphabet
+    private var currentFilter: Departments = .all
+    private let networkManager = NetworkManager.shared
+    
     // Возвращает true, если строка поиска пустая
     private var searchBarIsEmpty: Bool {
         guard let text = searchBar.text else { return false }
         return text.isEmpty
     }
-    // Показывает, происходит ли фильтрация
+    // Показывает, происходит ли поиск
     private var isSearching: Bool {
         return !searchBarIsEmpty
     }
-    
     private var isFiltering = false
-
-    private let networkManager = NetworkManager.shared
-    private var currentSortType: SortType = .alphabet
-    private var currentFilter: Departments = .all
     
     // MARK: - Life Cycles Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
         fetchUsers()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -59,18 +56,26 @@ final class UsersListViewController: UIViewController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         view.endEditing(true)
-        
     }
     
     // MARK: - Private Methods
     private func setupViews() {
         view.backgroundColor = .white
-        
-        setupSearchBar()
-        
+        view.addSubview(searchBar)
         view.addSubview(tabMenu)
-        tabMenu.filterDelegate = self
-        tabMenu.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(tableView)
+        
+        configSearchBar()
+        configTabMenu()
+        configTableView()
+        
+        // MARK: - Set Constraints
+        NSLayoutConstraint.activate([
+            searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 6),
+            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            searchBar.heightAnchor.constraint(equalToConstant: 40)
+        ])
         
         NSLayoutConstraint.activate([
             tabMenu.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
@@ -79,24 +84,19 @@ final class UsersListViewController: UIViewController {
             tabMenu.heightAnchor.constraint(equalToConstant: 36)
         ])
         
-        setupTableView()
-        
-    }
-    
-    private func setupTableView() {
-        tableView.rowHeight = 80
-        tableView.separatorStyle = .none
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.showsVerticalScrollIndicator = false
-        
-        view.addSubview(tableView)
-        
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: tabMenu.bottomAnchor, constant: 16),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+    }
+    
+    private func configTableView() {
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.rowHeight = 80
+        tableView.separatorStyle = .none
+        tableView.showsVerticalScrollIndicator = false
         
         tableView.register(UserCell.self, forCellReuseIdentifier: "userCell")
         
@@ -104,10 +104,14 @@ final class UsersListViewController: UIViewController {
         tableView.delegate = self
     }
     
-    private func setupSearchBar() {
+    private func configSearchBar() {
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchBar.searchBarStyle = .minimal
+        searchBar.autocapitalizationType = .none
+        
         searchBar.searchTextField.layer.cornerRadius = 16
         searchBar.searchTextField.clipsToBounds = true
+        
         searchBar.setImage(UIImage(named: "lightSearch"), for: .search, state: .normal)
         searchBar.searchTextField.attributedPlaceholder = NSAttributedString(
             string: "Введи имя, тег, почту ...",
@@ -121,35 +125,38 @@ final class UsersListViewController: UIViewController {
         if let textField = searchBar.value(forKey: "searchField") as? UITextField {
             textField.tintColor = UIColor(red: 0.396, green: 0.204, blue: 1, alpha: 1)
         }
+        // Кнопка Фильтр
         searchBar.setImage(UIImage(named: "filter"), for: .bookmark, state: .normal)
         searchBar.showsBookmarkButton = true
+        // Кнопка х - Очистить
         searchBar.setImage(UIImage(named: "x"), for: .clear, state: .normal)
         searchBar.showsCancelButton = false
-        
-        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).title = "Отмена"
+        // Кнопка Cancel - Отмена
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self])
+            .title = "Отмена"
         let cancelButtonAttributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor(red: 0.396, green: 0.204, blue: 1, alpha: 1),
-            .font: UIFont.systemFont(ofSize: 16)]
-        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes(cancelButtonAttributes, for: .normal)
-        searchBar.autocapitalizationType = .none
+            .font: UIFont.systemFont(ofSize: 16)
+        ]
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self])
+            .setTitleTextAttributes(cancelButtonAttributes, for: .normal)
         
-        view.addSubview(searchBar)
-        
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 6),
-            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            searchBar.heightAnchor.constraint(equalToConstant: 40)
-        ])
-        
+        // Инициализация delegate для searchBar экземпляром класса UsersListViewController
+        // UsersListViewController будет отвечать за обработку событий searchBar
         searchBar.delegate = self
+    }
+    
+    private func configTabMenu() {
+        tabMenu.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Инициализация delegate для tabMenu экземпляром класса UsersListViewController
+        // UsersListViewController будет получать уведомления от tabMenu
+        tabMenu.filterDelegate = self
     }
 }
 
 // MARK: - UITableViewDelegate, UITableViewDataSource
 extension UsersListViewController: UITableViewDelegate, UITableViewDataSource {
-    
     // Количество строк в таблице.
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return isSearching || isFiltering
@@ -164,11 +171,10 @@ extension UsersListViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         let user = isSearching || isFiltering
-        ? filteredUsers[indexPath.row]
-        : users[indexPath.row]
+            ? filteredUsers[indexPath.row]
+            : users[indexPath.row]
         
         cell.user = user
-        
         return cell
     }
     
@@ -227,8 +233,8 @@ extension UsersListViewController: UISearchBarDelegate {
         } else {
             // Непустая строка поиска
             let usersToFilter = currentFilter == .all
-            ? users
-            : users.filter { $0.department == currentFilter
+                ? users
+                : users.filter { $0.department == currentFilter
             }
             
             filteredUsers = usersToFilter.filter { user in
@@ -238,7 +244,7 @@ extension UsersListViewController: UISearchBarDelegate {
         }
         tableView.reloadData()
     }
-
+    
     // Вызывается при нажатии кнопки BookmarkButton (Сортировка)
     func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
         print("searchBarBookmarkButtonClicked")
@@ -286,35 +292,52 @@ extension UsersListViewController {
 
 // MARK: - SortSheetControllerDelegate
 extension UsersListViewController: SortSheetControllerDelegate {
+    // Устанавливает тип сортировки и применяет его к отфильтрованным данным
     func setSort(sortType: SortType) {
-        print("Current sortType: \(sortType)")
-        
-        switch sortType {
-        case .alphabet:
-            users.sort { $0.fullName < $1.fullName }
-        case .birthday:
-            users.sort { $0.birthday < $1.birthday }
+            print("Current sortType: \(sortType)")
+            currentSortType = sortType
+            
+            let filteredData = isFiltering ? filteredUsers : users
+            
+            switch currentSortType {
+            case .alphabet:
+                filteredUsers = filteredData.sorted { $0.fullName < $1.fullName }
+            case .birthday:
+                filteredUsers = filteredData.sorted { $0.birthday < $1.birthday }
+            }
+            
+            tableView.reloadData()
         }
-        currentSortType = sortType
-        tableView.reloadData()
-//        fetchUsers()
-    }
 }
 
+// MARK: - TabMenuCollectionViewDelegate
 extension UsersListViewController: TabMenuCollectionViewDelegate {
+    // Устанавливает фильтр по департаменту и применяет его
     func setFilter(byDepartment: Departments) {
         print("Current department: \(byDepartment)")
         
         currentFilter = byDepartment
         
-        switch byDepartment {
+        switch currentFilter {
         case .all:
             filteredUsers = users
         default:
             isFiltering = true
             filteredUsers = users.filter { $0.department == currentFilter }
         }
+        applySorting()
         tableView.reloadData()
     }
     
+    // Применяет текущую сортировку к отфильтрованным данным
+    private func applySorting() {
+        let sortedData = filteredUsers
+        
+        switch currentSortType {
+        case .alphabet:
+            filteredUsers = sortedData.sorted { $0.fullName < $1.fullName }
+        case .birthday:
+            filteredUsers = sortedData.sorted { $0.birthday < $1.birthday }
+        }
+    }
 }
