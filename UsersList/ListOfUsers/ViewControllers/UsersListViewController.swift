@@ -29,6 +29,8 @@ final class UsersListViewController: UIViewController {
     private var currentFilter: Departments = .all
     private let networkManager = NetworkManager.shared
     
+    private let refreshControl = UIRefreshControl()
+    
     // Возвращает true, если строка поиска пустая
     private var searchBarIsEmpty: Bool {
         guard let text = searchBar.text else { return false }
@@ -44,6 +46,7 @@ final class UsersListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
+        pullToRefreshSetup()
         fetchUsers()
     }
     
@@ -165,6 +168,16 @@ final class UsersListViewController: UIViewController {
         // Инициализация delegate для tabMenu экземпляром класса UsersListViewController
         // UsersListViewController будет получать уведомления от tabMenu
         tabMenu.filterDelegate = self
+    }
+    
+    private func pullToRefreshSetup() {
+        refreshControl.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
+        tableView.addSubview(refreshControl)
+    }
+    
+    @objc private func didPullToRefresh() {
+        fetchUsers()
+        refreshControl.endRefreshing()
     }
 }
 
