@@ -47,4 +47,8 @@ final class UserCell: UITableViewCell {
         self.contentConfiguration = content
     }
     
+//    override func addSubview(_ view: UIView) {
+//        
+//    }
+//    
 }

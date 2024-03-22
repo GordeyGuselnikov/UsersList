@@ -12,8 +12,6 @@ enum SortType: String {
     case birthday = "По дню рождения"
 }
 
-
-
 final class SortSheetController: UIViewController {
 
     // MARK: - Private Properties
@@ -77,10 +75,6 @@ final class SortSheetController: UIViewController {
         navigationItem.leftBarButtonItem = backButton
     }
     
-    @objc private func dismissViewController() {
-        dismiss(animated: true)
-    }
-    
     private func configRadioButtonView(with sortType: SortType) {
         
         switch sortType {
@@ -108,17 +102,22 @@ final class SortSheetController: UIViewController {
         radioButtonView.sortNameLabel.text = sortType.rawValue
     }
     
-    @objc func sortAlphabeticallyRadioButtonTapped(_ sender: UIButton) {
-        sender.isSelected = true
-        sortByBirthdayRadioView.radioButton.isSelected = false
-//        selectedSortType = .alphabet
-        sortDelegate?.setSort(sortType: .alphabet)
+    @objc private func dismissViewController() {
+        dismiss(animated: true)
     }
     
-    @objc func sortByBirthdayRadioButtonTapped(_ sender: UIButton) {
+    @objc private func sortAlphabeticallyRadioButtonTapped(_ sender: UIButton) {
+        sender.isSelected = true
+        sortByBirthdayRadioView.radioButton.isSelected = false
+        sortDelegate?.setSort(sortType: .alphabet)
+        dismissViewController() // по функциональным требованиям: При переключении варианта сортировки Bottom Sheet закрывается
+    }
+    
+    @objc private func sortByBirthdayRadioButtonTapped(_ sender: UIButton) {
         sender.isSelected = true
         sortAlphabeticallyRadioView.radioButton.isSelected = false
-//        selectedSortType = .birthday
         sortDelegate?.setSort(sortType: .birthday)
+        dismissViewController() // по функциональным требованиям: При переключении варианта сортировки Bottom Sheet закрывается
     }
+    
 }

@@ -17,6 +17,7 @@ final class UsersListViewController: UIViewController {
     // MARK: - Private Properties
     private let tableView = UITableView()
     private let searchBar = UISearchBar()
+    private let tabMenu = TabMenuCollectionView()
     
     private var users: [User] = []
     private var filteredUsers: [User] = []
@@ -59,7 +60,19 @@ final class UsersListViewController: UIViewController {
         view.backgroundColor = .white
         
         setupSearchBar()
+        
+        view.addSubview(tabMenu)
+        tabMenu.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            tabMenu.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
+            tabMenu.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            tabMenu.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tabMenu.heightAnchor.constraint(equalToConstant: 36)
+        ])
+        
         setupTableView()
+        
     }
     
     private func setupTableView() {
@@ -71,7 +84,7 @@ final class UsersListViewController: UIViewController {
         view.addSubview(tableView)
         
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 16),
+            tableView.topAnchor.constraint(equalTo: tabMenu.bottomAnchor, constant: 16),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
