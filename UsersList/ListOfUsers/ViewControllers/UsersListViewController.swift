@@ -18,9 +18,10 @@ protocol TabMenuCollectionViewDelegate: AnyObject {
 
 final class UsersListViewController: UIViewController {
     // MARK: - Private Properties
-    private let tableView = UITableView()
     private let searchBar = UISearchBar()
     private let tabMenu = TabMenuCollectionView()
+    private let tableView = UITableView()
+    private var errorSearchView = ErrorSearchView()
     
     private var users: [User] = []
     private var filteredUsers: [User] = []
@@ -64,6 +65,9 @@ final class UsersListViewController: UIViewController {
         view.addSubview(searchBar)
         view.addSubview(tabMenu)
         view.addSubview(tableView)
+        view.addSubview(errorSearchView)
+        
+        errorSearchView.isHidden = true
         
         configSearchBar()
         configTabMenu()
@@ -90,6 +94,15 @@ final class UsersListViewController: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+        
+        errorSearchView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            errorSearchView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 220),
+            errorSearchView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            errorSearchView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            errorSearchView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
     }
     
     private func configTableView() {
@@ -242,6 +255,7 @@ extension UsersListViewController: UISearchBarDelegate {
                 user.userTag.lowercased().contains(searchText.lowercased())
             }
         }
+        errorSearchView.isHidden = !filteredUsers.isEmpty
         tableView.reloadData()
     }
     
