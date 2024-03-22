@@ -12,6 +12,10 @@ protocol SortSheetControllerDelegate: AnyObject {
     func setSort(sortType: SortType)
 }
 
+protocol TabMenuCollectionViewDelegate: AnyObject {
+    func setFilter(byDepartment: Departments)
+}
+
 final class UsersListViewController: UIViewController {
     
     // MARK: - Private Properties
@@ -27,12 +31,15 @@ final class UsersListViewController: UIViewController {
         return text.isEmpty
     }
     // Показывает, происходит ли фильтрация
-    private var isFiltering: Bool {
+    private var isSearching: Bool {
         return !searchBarIsEmpty
     }
+    
+    private var isFiltering = false
 
     private let networkManager = NetworkManager.shared
     private var currentSortType: SortType = .alphabet
+    private var currentFilter: Departments = .all
     
     // MARK: - Life Cycles Methods
     override func viewDidLoad() {
@@ -62,6 +69,7 @@ final class UsersListViewController: UIViewController {
         setupSearchBar()
         
         view.addSubview(tabMenu)
+        tabMenu.filterDelegate = self
         tabMenu.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
@@ -144,7 +152,7 @@ extension UsersListViewController: UITableViewDelegate, UITableViewDataSource {
     
     // Количество строк в таблице.
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return isFiltering
+        return isSearching || isFiltering
             ? filteredUsers.count
             : users.count
     }
@@ -155,7 +163,10 @@ extension UsersListViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         
-        let user = isFiltering ? filteredUsers[indexPath.row] : users[indexPath.row]
+        let user = isSearching || isFiltering
+        ? filteredUsers[indexPath.row]
+        : users[indexPath.row]
+        
         cell.user = user
         
         return cell
@@ -166,7 +177,7 @@ extension UsersListViewController: UITableViewDelegate, UITableViewDataSource {
         //снимать выделение с выбранной ячейки
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let selectedUser = isFiltering ? filteredUsers[indexPath.row] : users[indexPath.row]
+        let selectedUser = isSearching || isFiltering ? filteredUsers[indexPath.row] : users[indexPath.row]
         let detailViewController = DetailViewController()
         detailViewController.user = selectedUser
         navigationController?.pushViewController(detailViewController, animated: true)
@@ -204,15 +215,30 @@ extension UsersListViewController: UISearchBarDelegate {
         searchBar.resignFirstResponder()
     }
     
-    // Фильтрация контента по тексту поиска
     private func filterContentForSearchText(_ searchText: String) {
-        filteredUsers = users.filter { user in
-            return user.fullName.lowercased().contains(searchText.lowercased()) ||
+        if searchText.isEmpty {
+            // Пустая строка поиска, учитываем текущий фильтр по отделам
+            switch currentFilter {
+            case .all:
+                filteredUsers = users
+            default:
+                filteredUsers = users.filter { $0.department == currentFilter }
+            }
+        } else {
+            // Непустая строка поиска
+            let usersToFilter = currentFilter == .all
+            ? users
+            : users.filter { $0.department == currentFilter
+            }
+            
+            filteredUsers = usersToFilter.filter { user in
+                return user.fullName.lowercased().contains(searchText.lowercased()) ||
                 user.userTag.lowercased().contains(searchText.lowercased())
+            }
         }
         tableView.reloadData()
     }
-    
+
     // Вызывается при нажатии кнопки BookmarkButton (Сортировка)
     func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
         print("searchBarBookmarkButtonClicked")
@@ -272,6 +298,23 @@ extension UsersListViewController: SortSheetControllerDelegate {
         currentSortType = sortType
         tableView.reloadData()
 //        fetchUsers()
+    }
+}
+
+extension UsersListViewController: TabMenuCollectionViewDelegate {
+    func setFilter(byDepartment: Departments) {
+        print("Current department: \(byDepartment)")
+        
+        currentFilter = byDepartment
+        
+        switch byDepartment {
+        case .all:
+            filteredUsers = users
+        default:
+            isFiltering = true
+            filteredUsers = users.filter { $0.department == currentFilter }
+        }
+        tableView.reloadData()
     }
     
 }

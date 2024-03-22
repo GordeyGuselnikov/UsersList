@@ -14,6 +14,8 @@ final class TabMenuCollectionView: UICollectionView {
     private let departmentLayout = UICollectionViewFlowLayout()
     private var selectedIndexPath: IndexPath?
     
+    weak var filterDelegate: TabMenuCollectionViewDelegate?
+    
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: .zero, collectionViewLayout: departmentLayout)
         configureCollectionView()
@@ -95,6 +97,13 @@ extension TabMenuCollectionView : UICollectionViewDelegate, UICollectionViewData
         collectionView.reloadItems(at: [indexPath])
         // Скролл к выбранной ячейке
         collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+        
+        // Установка фильтра в UserListVC через filterdelegete
+        if let selectedIndexPath {
+            filterDelegate?.setFilter(byDepartment: departments[selectedIndexPath.item])
+        } else {
+            filterDelegate?.setFilter(byDepartment: .all)
+        }
     }
     
 }
