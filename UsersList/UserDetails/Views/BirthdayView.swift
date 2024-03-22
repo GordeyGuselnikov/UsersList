@@ -32,7 +32,6 @@ final class BirthdayView: UIView {
         configureAgeLabel()
         configureStarImageView()
         
-        
         starImageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             starImageView.topAnchor.constraint(equalTo: topAnchor, constant: 16),
@@ -68,5 +67,4 @@ final class BirthdayView: UIView {
         starImageView.contentMode = .scaleAspectFill
         starImageView.image = UIImage(named: "star")
     }
-    
 }
