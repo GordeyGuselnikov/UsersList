@@ -57,7 +57,6 @@ final class DetailViewController: UIViewController {
         configureNameStackView()
         configurePhotoImageView()
         
-        
         photoImageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             photoImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 72),

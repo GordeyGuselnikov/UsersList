@@ -23,6 +23,7 @@ final class UsersListViewController: UIViewController {
     private let tableView = UITableView()
     private var errorSearchView = ErrorSearchView()
     private let criticalErrorView = CriticalErrorView()
+    private let refreshControl = UIRefreshControl()
     
     private var users: [User] = []
     private var filteredUsers: [User] = []
@@ -30,8 +31,8 @@ final class UsersListViewController: UIViewController {
     private var currentFilter: Departments = .all
     private let networkManager = NetworkManager.shared
     
-    private let refreshControl = UIRefreshControl()
-    
+    // Свойство для хранения текста поиска
+    private var savedSearchText: String = ""
     // Возвращает true, если строка поиска пустая
     private var searchBarIsEmpty: Bool {
         guard let text = searchBar.text else { return false }
@@ -41,6 +42,7 @@ final class UsersListViewController: UIViewController {
     private var isSearching: Bool {
         return !searchBarIsEmpty
     }
+    // Показывает, происходит ли фильтрация
     private var isFiltering = false
     
     // MARK: - Life Cycles Methods
@@ -248,6 +250,7 @@ extension UsersListViewController: UISearchBarDelegate {
     
     // Вызывается, когда изменяется текст в поисковом поле
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        savedSearchText = searchText
         filterContentForSearchText(searchText)
     }
     
@@ -259,6 +262,7 @@ extension UsersListViewController: UISearchBarDelegate {
         searchBar.showsBookmarkButton = true
         searchBar.resignFirstResponder()
         searchBar.text = nil
+        savedSearchText = ""
         tableView.reloadData()
     }
     
@@ -268,30 +272,19 @@ extension UsersListViewController: UISearchBarDelegate {
     }
     
     private func filterContentForSearchText(_ searchText: String) {
-        if searchText.isEmpty {
-            // Пустая строка поиска, учитываем текущий фильтр по отделам
-            switch currentFilter {
-            case .all:
-                filteredUsers = users
-            default:
-                filteredUsers = users.filter { $0.department == currentFilter }
-            }
-        } else {
-            // Непустая строка поиска
-            let usersToFilter = currentFilter == .all
-                ? users
-                : users.filter { $0.department == currentFilter
-            }
-            
-            filteredUsers = usersToFilter.filter { user in
-                return user.fullName.lowercased().contains(searchText.lowercased()) ||
-                user.userTag.lowercased().contains(searchText.lowercased())
-            }
+        let searchTextLowercased = searchText.lowercased()
+        let filteredUsersByDepartment = currentFilter == .all ? users : users.filter { $0.department == currentFilter }
+        
+        filteredUsers = searchText.isEmpty
+        ? filteredUsersByDepartment
+        : filteredUsersByDepartment.filter { user in
+            return user.fullName.lowercased().contains(searchTextLowercased) ||                user.userTag.lowercased().contains(searchTextLowercased)
         }
+        
         errorSearchView.isHidden = !filteredUsers.isEmpty
         tableView.reloadData()
     }
-    
+
     // Вызывается при нажатии кнопки BookmarkButton (Сортировка)
     func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
         print("searchBarBookmarkButtonClicked")
@@ -319,17 +312,8 @@ extension UsersListViewController {
             case .success(let users):
                 print(users)
                 self?.users = users
-                
-                switch self?.currentSortType {
-                case .alphabet:
-                    self?.users.sort { $0.fullName < $1.fullName }
-                case .birthday:
-                    self?.users.sort { $0.birthday < $1.birthday }
-                case .none:
-                    break
-                }
+                self?.applySorting()
                 self?.tableView.reloadData()
-                
             case .failure(let error):
                 print(error)
             }
@@ -341,20 +325,12 @@ extension UsersListViewController {
 extension UsersListViewController: SortSheetControllerDelegate {
     // Устанавливает тип сортировки и применяет его к отфильтрованным данным
     func setSort(sortType: SortType) {
-            print("Current sortType: \(sortType)")
-            currentSortType = sortType
-            
-            let filteredData = isFiltering ? filteredUsers : users
-            
-            switch currentSortType {
-            case .alphabet:
-                filteredUsers = filteredData.sorted { $0.fullName < $1.fullName }
-            case .birthday:
-                filteredUsers = filteredData.sorted { $0.birthday < $1.birthday }
-            }
-            
-            tableView.reloadData()
-        }
+        print("Current sortType: \(sortType)")
+        currentSortType = sortType
+        
+        applySorting()
+        tableView.reloadData()
+    }
 }
 
 // MARK: - TabMenuCollectionViewDelegate
@@ -362,29 +338,35 @@ extension UsersListViewController: TabMenuCollectionViewDelegate {
     // Устанавливает фильтр по департаменту и применяет его
     func setFilter(byDepartment: Departments) {
         print("Current department: \(byDepartment)")
-        
         currentFilter = byDepartment
         
+        applyFilter()
+        filterContentForSearchText(savedSearchText)
+        tableView.reloadData()
+    }
+    
+    // Применение текущего фильтра по департаменту
+    private func applyFilter() {
         switch currentFilter {
         case .all:
+            isFiltering = false
             filteredUsers = users
         default:
             isFiltering = true
             filteredUsers = users.filter { $0.department == currentFilter }
         }
         applySorting()
-        tableView.reloadData()
     }
     
-    // Применяет текущую сортировку к отфильтрованным данным
+    // Применение текущей сортировки
     private func applySorting() {
-        let sortedData = filteredUsers
-        
         switch currentSortType {
         case .alphabet:
-            filteredUsers = sortedData.sorted { $0.fullName < $1.fullName }
+            users.sort { $0.fullName < $1.fullName }
+            filteredUsers.sort { $0.fullName < $1.fullName }
         case .birthday:
-            filteredUsers = sortedData.sorted { $0.birthday < $1.birthday }
+            users.sort { $0.birthday < $1.birthday }
+            filteredUsers.sort { $0.birthday < $1.birthday }
         }
     }
 }
