@@ -207,9 +207,9 @@ final class UsersListViewController: UIViewController {
 extension UsersListViewController: UITableViewDelegate, UITableViewDataSource {
     // Количество строк в таблице.
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return isSearching || isFiltering
-            ? filteredUsers.count
-            : users.count
+        isSearching || isFiltering
+        ? filteredUsers.count
+        : users.count
     }
     
     // Настройка ячейки для конкретного индекса
@@ -278,7 +278,8 @@ extension UsersListViewController: UISearchBarDelegate {
         filteredUsers = searchText.isEmpty
         ? filteredUsersByDepartment
         : filteredUsersByDepartment.filter { user in
-            return user.fullName.lowercased().contains(searchTextLowercased) ||                user.userTag.lowercased().contains(searchTextLowercased)
+            return user.fullName.lowercased().contains(searchTextLowercased) ||
+            user.userTag.lowercased().contains(searchTextLowercased)
         }
         
         errorSearchView.isHidden = !filteredUsers.isEmpty
